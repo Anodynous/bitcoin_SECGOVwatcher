@@ -67,13 +67,13 @@ def checkETF():
     # Send any new items using Telegram and store it in database
     if hitlist:
         for hit in hitlist:
-            cryptobuddy_bot(hit)  # Send using Telegram
+            cryptobuddy_bot(hit)  # Send text using Telegram
             write_generic(hit)  # Store in database
 
             # Find the links associated with the new items found
             hitlink = soup.find(text=hit)
             link_short = hitlink.findPrevious('a')
             link_full = 'https://www.sec.gov' + link_short.get('href')
-            cryptobuddy_bot(link_full)
+            cryptobuddy_bot(link_full)  # Send the associated link using Telegram
 
 checkETF()
