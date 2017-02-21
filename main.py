@@ -17,12 +17,10 @@ telegram_token = config['TELEGRAM']['TOKEN']
 # File to store old news in
 file = 'old_news.txt'
 
-def cryptobuddy_bot(data):
+def cryptobuddy_bot(message):
     """ Sends new items using Telegram """
     bot = telepot.Bot(telegram_token)
-    for message in data:
-        bot.sendMessage(telegram_user, message)
-    bot.sendMessage(telegram_user, url)
+    bot.sendMessage(telegram_user, message)
 
 def read_generic():
     """ Reads specified text file into list, stripping out newline characters, and returns it """
@@ -36,10 +34,9 @@ def read_generic():
 
 def write_generic(data):
     """ Writes any new items to textfile on new line """
-    f = open(file,'a')
-    for d in data:
-        f.write(d)
-        f.write('\n')
+    f = open(file, 'a')
+    f.write(data)
+    f.write('\n')
     f.close()
 
 def checkETF():
@@ -67,9 +64,16 @@ def checkETF():
                 if item not in hitlist and item not in old_news:
                         hitlist.append(item)
 
-    # Send any new items using Telegram and store in database
+    # Send any new items using Telegram and store it in database
     if hitlist:
-        cryptobuddy_bot(hitlist)  # Send using Telegram
-        write_generic(hitlist)  # Store in database
+        for hit in hitlist:
+            cryptobuddy_bot(hit)  # Send using Telegram
+            write_generic(hit)  # Store in database
+
+            # Find the links associated with the new items found
+            hitlink = soup.find(text=hit)
+            link_short = hitlink.findPrevious('a')
+            link_full = 'https://www.sec.gov' + link_short.get('href')
+            cryptobuddy_bot(link_full)
 
 checkETF()
